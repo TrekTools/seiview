@@ -5,6 +5,7 @@ import TimeSeriesAnalysis from '../views/TimeSeriesAnalysis.vue'
 import MarketAnalysis from '../views/MarketAnalysis.vue'
 import TrekStarmap from '@/views/TrekStarmap.vue'
 import AboutPage from '@/views/AboutPage.vue'
+import { trackRouter, event } from 'vue-gtag-next'
 
 const routes = [
   {
@@ -44,6 +45,8 @@ const router = createRouter({
   history: createWebHistory(),
   routes
 })
+
+trackRouter(router)
 
 router.beforeEach((to, from) => {
   console.log('Navigating from:', from.path, 'to:', to.path)
