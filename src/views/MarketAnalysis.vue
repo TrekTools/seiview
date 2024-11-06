@@ -127,7 +127,7 @@ export default {
         hoverinfo: 'none',
         marker: {
           colors: dataToShow.map(item => {
-            const percentChange = item.floor_percent_diff_1h * 100;
+            const percentChange = item.floor_percent_diff_1h;
             if (percentChange >= 1) return 'rgba(46, 196, 182, 0.4)';
             if (percentChange <= -1) return 'rgba(231, 29, 54, 0.4)';
             return 'rgba(212, 180, 131, 0.4)';
