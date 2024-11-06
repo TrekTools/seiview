@@ -1,5 +1,6 @@
 <template>
   <div class="collection-stats">
+    <BetaDisclaimer />
     <div class="lcars-header-bar">
       <div class="title">{{ collectionName }}</div>
     </div>
@@ -21,9 +22,13 @@
 
 <script>
 import axios from 'axios'
+import BetaDisclaimer from '@/components/BetaDisclaimer.vue'
 
 export default {
   name: 'CollectionStats',
+  components: {
+    BetaDisclaimer
+  },
   props: {
     slug: {
       type: String,
@@ -45,6 +50,9 @@ export default {
   created() {
     console.log('CollectionStats created with slug:', this.slug)
     this.fetchCollectionData()
+  },
+  mounted() {
+    console.log('BetaDisclaimer component:', this.$options.components.BetaDisclaimer)
   },
   methods: {
     async fetchCollectionData() {
@@ -111,6 +119,14 @@ export default {
 <style scoped>
 .collection-stats {
   padding: 20px;
+  background-color: black;
+  min-height: 100vh;
+  position: relative;
+}
+
+.test-beta {
+  color: white;
+  margin-bottom: 20px;
 }
 
 .lcars-header-bar {

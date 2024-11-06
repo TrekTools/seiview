@@ -1,5 +1,6 @@
 <template>
   <div class="time-series">
+    <BetaDisclaimer />
     <div class="lcars-header-bar">
       <div class="title">TIME SERIES ANALYSIS (24 Hours)</div>
     </div>
@@ -50,6 +51,7 @@ import {
   Tooltip,
   Legend
 } from 'chart.js'
+import BetaDisclaimer from '@/components/BetaDisclaimer.vue'
 
 ChartJS.register(
   CategoryScale,
@@ -63,7 +65,10 @@ ChartJS.register(
 
 export default {
   name: 'TimeSeriesAnalysis',
-  components: { Line },
+  components: { 
+    Line,
+    BetaDisclaimer
+  },
   data() {
     return {
       loading: false,

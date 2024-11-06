@@ -33,7 +33,7 @@
         </div>
       </div>
     </nav>
-    
+    <BetaDisclaimer />
     <router-view></router-view>
   </div>
 </template>
@@ -250,4 +250,15 @@ body {
   z-index: 1;
 }
 </style>
+
+<script>
+import BetaDisclaimer from '@/components/BetaDisclaimer.vue'
+
+export default {
+  name: 'App',
+  components: {
+    BetaDisclaimer
+  }
+}
+</script>
 

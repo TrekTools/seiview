@@ -1,5 +1,7 @@
 <template>
   <div class="market-analysis">
+    <BetaDisclaimer />
+    <h1>Market Analysis</h1>
     <div class="lcars-header-bar">
       <div class="title">VOLUME VIEW (24 Hours)</div>
     </div>
@@ -33,9 +35,13 @@
 <script>
 import axios from 'axios'
 import Plotly from 'plotly.js-dist'
+import BetaDisclaimer from '@/components/BetaDisclaimer.vue'
 
 export default {
   name: 'MarketAnalysis',
+  components: {
+    BetaDisclaimer
+  },
   data() {
     return {
       marketData: [],
