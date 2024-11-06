@@ -1,0 +1,59 @@
+:root {
+  /* LCARS Colors */
+  --lcars-orange: #ff9c00;
+  --lcars-pink: #ff94c5;
+  --lcars-blue: #99ccff;
+  --lcars-purple: #cc99cc;
+  --lcars-brown: #cc9966;
+  --lcars-red: #cc6666;
+  --lcars-tan: #ffcc99;
+  --lcars-background: #000000;
+}
+
+body {
+  background-color: var(--lcars-background);
+  color: var(--lcars-orange);
+  font-family: "Arial", sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+.lcars-element {
+  background-color: var(--lcars-orange);
+  border-radius: 20px;
+  padding: 10px;
+  margin: 10px;
+}
+
+.lcars-header {
+  display: flex;
+  align-items: center;
+  background-color: var(--lcars-purple);
+  height: 60px;
+  border-radius: 0 0 20px 20px;
+  padding: 0 20px;
+}
+
+.lcars-button {
+  background-color: var(--lcars-blue);
+  border: none;
+  border-radius: 15px;
+  color: black;
+  padding: 10px 20px;
+  margin: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+.lcars-button:hover {
+  background-color: var(--lcars-pink);
+}
+
+.lcars-panel {
+  background-color: var(--lcars-background);
+  border: 2px solid var(--lcars-orange);
+  border-radius: 20px;
+  padding: 20px;
+  margin: 10px;
+} 
