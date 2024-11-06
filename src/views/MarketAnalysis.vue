@@ -217,7 +217,7 @@ export default {
 }
 
 .title {
-  color: white;
+  color: black;
   font-size: 1.5em;
   font-weight: 600;
   letter-spacing: 2px;

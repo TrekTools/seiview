@@ -1,4 +1,8 @@
 <template>
+  <div class="starmap">
+  <div class="lcars-header-bar">
+    <div class="title">TREK STARMAP 2024/25</div>
+  </div>
     <div class="starmap-container">
       <div id="trek-starmap" ref="plotDiv"></div>
       <!-- Add a modal or popup for showing details -->
@@ -16,6 +20,7 @@
         </div>
       </div>
     </div>
+  </div>
   </template>
   
   <script>
@@ -230,6 +235,12 @@
   </script>
   
   <style scoped>
+  .starmap {
+    padding: 20px;
+    background-color: black;
+    min-height: 100vh;
+  }
+
   .starmap-container {
     width: 100%;
     height: calc(100vh - 60px);
@@ -289,6 +300,24 @@
   .close-btn:hover {
     color: #ffffff;
   }
+
+.lcars-header-bar {
+  background-color: var(--lcars-orange);
+  height: 40px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.title {
+  color: black;
+  font-size: 1.5em;
+  font-weight: 600;
+  letter-spacing: 2px;
+  font-family: var(--lcars-font);
+}
   
   /* Animation for horizontal lines */
   :deep(.horizontal-line) {
