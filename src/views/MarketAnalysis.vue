@@ -96,7 +96,7 @@ export default {
           {
             headers: {
               'Content-Type': 'application/json',
-              'x-hasura-admin-secret': import.meta.env.VITE_HASURA_ADMIN_SECRET
+              'x-hasura-admin-secret': import.meta.env.VUE_APP_HASURA_ADMIN_SECRET
             }
           }
         )
