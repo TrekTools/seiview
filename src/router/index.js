@@ -4,6 +4,7 @@ import CollectionStats from '../views/CollectionStats.vue'
 import TimeSeriesAnalysis from '../views/TimeSeriesAnalysis.vue'
 import MarketAnalysis from '../views/MarketAnalysis.vue'
 import TrekStarmap from '@/views/TrekStarmap.vue'
+import AboutPage from '@/views/AboutPage.vue'
 
 const routes = [
   {
@@ -31,6 +32,11 @@ const routes = [
     path: '/starmap',
     name: 'TrekStarmap',
     component: TrekStarmap
+  },
+  {
+    path: '/about',
+    name: 'About',
+    component: AboutPage
   }
 ]
 

@@ -1,6 +1,5 @@
 <template>
   <div class="starmap">
-    <BetaDisclaimer />
     <div class="lcars-header-bar">
       <div class="title">TREK STARMAP 2024/25</div>
     </div>
@@ -26,12 +25,13 @@
 
 <script>
 import Plotly from 'plotly.js-dist'
-import BetaDisclaimer from '@/components/BetaDisclaimer.vue'
 
 export default {
   name: 'TrekStarmap',
   components: {
-    BetaDisclaimer
+    // Remove this line if it exists:
+    // BetaDisclaimer,
+    // Keep other components...
   },
   data() {
     return {

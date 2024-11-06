@@ -18,7 +18,7 @@
         <router-link to="/time-series" class="nav-link time-series">Time Series</router-link>
         <router-link to="/market-analysis" class="nav-link market-analysis">Market Analysis</router-link>
         <router-link to="/starmap" class="nav-link starmap">Starmap</router-link>
-        
+        <router-link to="/about" class="nav-link about">About</router-link>
         <div class="social-links">
           <a href="https://discord.gg/K9vUgVxm3W" target="_blank" class="social-link discord">
             <svg class="social-icon" viewBox="0 0 24 24">
@@ -135,6 +135,11 @@ body {
   color: black;
 }
 
+.about {
+  background-color: #ffcc33;
+  color: black;
+}
+
 .nav-link:hover {
   transform: scale(1.05);
   filter: brightness(1.1);
@@ -153,6 +158,10 @@ body {
 }
 
 .router-link-active.starmap {
+  box-shadow: 0 0 15px var(--lcars-purple);
+}
+
+.router-link-active.about {
   box-shadow: 0 0 15px var(--lcars-purple);
 }
 

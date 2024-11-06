@@ -1,6 +1,5 @@
 <template>
   <div class="collection-stats">
-    <BetaDisclaimer />
     <div class="lcars-header-bar">
       <div class="title">{{ collectionName }}</div>
     </div>
@@ -22,13 +21,9 @@
 
 <script>
 import axios from 'axios'
-import BetaDisclaimer from '@/components/BetaDisclaimer.vue'
 
 export default {
   name: 'CollectionStats',
-  components: {
-    BetaDisclaimer
-  },
   props: {
     slug: {
       type: String,
