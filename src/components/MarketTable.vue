@@ -47,8 +47,8 @@
       <!-- Data Rows -->
       <div class="lcars-table-rows" v-if="sortedData.length">
         <div 
-          v-for="item in sortedData" 
-          :key="item.name"
+          v-for="(item, index) in sortedData" 
+          :key="`${item.slug}-${index}`"
           class="table-row"
           @click="handleRowClick(item)"
         >
@@ -121,16 +121,14 @@ export default {
         let aValue = a[this.sortKey];
         let bValue = b[this.sortKey];
         
-        // Handle string comparison for slug
-        if (this.sortKey === 'slug') {
+        // Handle string comparison for name
+        if (this.sortKey === 'name') {
           aValue = String(aValue).toLowerCase();
           bValue = String(bValue).toLowerCase();
-        }
-        
-        // Handle numeric comparison for other fields
-        if (this.sortKey !== 'slug') {
-          aValue = Number(aValue) || 0;
-          bValue = Number(bValue) || 0;
+        } else {
+          // Handle numeric values
+          aValue = parseFloat(aValue) || 0;
+          bValue = parseFloat(bValue) || 0;
         }
         
         if (this.sortOrder === 'asc') {
