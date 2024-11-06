@@ -1,7 +1,18 @@
 <template>
   <div class="app">
+    <div class="shooting-stars">
+      <div class="star"></div>
+      <div class="star"></div>
+      <div class="star"></div>
+      <div class="star"></div>
+      <div class="star"></div>
+      <div class="star"></div>
+      <div class="star"></div>
+      <div class="star"></div>
+    </div>
+    
     <nav class="lcars-nav">
-      <router-link to="/" class="title-button">SEIVIEW</router-link>
+      <router-link to="/" class="title-button">SEIVIEW<br>(beta)</router-link>
       <div class="nav-links">
         <router-link to="/" class="nav-link collections">Collections</router-link>
         <router-link to="/time-series" class="nav-link time-series">Time Series</router-link>
@@ -46,6 +57,9 @@ body {
 .app {
   padding: 20px;
   font-family: var(--lcars-font);
+  position: relative;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
 .lcars-nav {
@@ -53,10 +67,14 @@ body {
   gap: 20px;
   margin-bottom: 20px;
   align-items: center;
+  position: relative;
+  overflow: hidden;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .title-button {
-  background-color: var(--lcars-orange);
+  background-color: var(--lcars-red);
   color: black;
   padding: 15px;
   width: 120px;
@@ -171,6 +189,65 @@ body {
 .social-link:hover {
   transform: scale(1.1);
   filter: brightness(1.1);
+}
+
+/* Shooting stars container */
+.shooting-stars {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 180px; /* Match nav height (including padding) */
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Individual star styling */
+.star {
+  position: absolute;
+  height: 2px;
+  background: linear-gradient(90deg, #ffffff, transparent);
+  border-radius: 50%;
+  animation: shoot 6s linear infinite; /* Doubled from 3s to 6s to slow down */
+  opacity: 0;
+}
+
+/* Position each star differently */
+.star:nth-child(1) { top: 20%; right: -100px; width: 100px; animation-delay: 0s; }
+.star:nth-child(2) { top: 45%; right: -150px; width: 150px; animation-delay: 0.8s; }
+.star:nth-child(3) { top: 30%; right: -80px; width: 80px; animation-delay: 1.6s; }
+.star:nth-child(4) { top: 65%; right: -120px; width: 120px; animation-delay: 2.4s; }
+.star:nth-child(5) { top: 15%; right: -130px; width: 130px; animation-delay: 3.2s; }
+.star:nth-child(6) { top: 55%; right: -90px; width: 90px; animation-delay: 4.0s; }
+.star:nth-child(7) { top: 35%; right: -110px; width: 110px; animation-delay: 4.8s; }
+.star:nth-child(8) { top: 25%; right: -140px; width: 140px; animation-delay: 5.6s; }
+
+/* Shooting animation */
+@keyframes shoot {
+  0% {
+    transform: translateX(0) scale(1);
+    opacity: 0;
+  }
+  1% {
+    opacity: 1;
+  }
+  30% {
+    opacity: 1;
+  }
+  60% {
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(-200vw) scale(0.2);
+    opacity: 0;
+  }
+}
+
+/* Ensure all content stays above stars */
+.lcars-nav,
+.router-view {
+  position: relative;
+  z-index: 1;
 }
 </style>
 
