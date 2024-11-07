@@ -167,7 +167,7 @@ export default {
     },
 
     formatPercent(value) {
-      return `${((value || 0) * 100).toFixed(2)}%`
+      return `${((value || 0)).toFixed(2)}%`
     },
 
     setFilter(filter) {
@@ -188,10 +188,10 @@ export default {
 
       switch (this.currentFilter) {
         case 'winners':
-          filtered = filtered.filter(item => (item.floor_percent_diff_1h * 100) >= 1);
+          filtered = filtered.filter(item => (item.floor_percent_diff_1h) >= 1);
           break;
         case 'losers':
-          filtered = filtered.filter(item => (item.floor_percent_diff_1h * 100) <= -1);
+          filtered = filtered.filter(item => (item.floor_percent_diff_1h) <= -1);
           break;
         // 'all' case doesn't need additional filtering
       }
