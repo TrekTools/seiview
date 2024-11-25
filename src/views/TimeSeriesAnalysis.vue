@@ -205,6 +205,15 @@ export default {
             owners
             auction_count
           }
+          token_timeseries(
+            where: {
+              name: {_eq: "Wrapped SEI"},
+              record: { _gte: $minRecord }
+            }
+          ) {
+            record
+            usd_price
+          }
         }
       `
 
@@ -226,7 +235,16 @@ export default {
           }
         )
         
-        this.localTimeSeriesData = response.data.data.pallet_timeseries
+        // Create a map of record to USD price
+        const usdPrices = new Map(
+          response.data.data.token_timeseries.map(item => [item.record, item.usd_price])
+        )
+
+        // Attach USD price to each timeseries entry
+        this.localTimeSeriesData = response.data.data.pallet_timeseries.map(item => ({
+          ...item,
+          usd_price: usdPrices.get(item.record) || 0
+        }))
         this.filteredTimeSeriesData = this.localTimeSeriesData
       } catch (err) {
         console.error('Error fetching time series data:', err)
@@ -266,7 +284,11 @@ export default {
           }
         }
         collections[item.name].times.push(item.rounded_time)
-        collections[item.name].values.push(item[this.selectedMetric])
+        let value = item[this.selectedMetric]
+        if (this.selectedMetric === 'floor' && this.multiplyFloor) {
+          value *= (item.usd_price || 0)  // Multiply by actual USD price
+        }
+        collections[item.name].values.push(value)
       })
 
       // Create chart data
@@ -301,12 +323,6 @@ export default {
               font: {
                 family: 'Antonio',
                 size: 18
-              },
-              callback: (value) => {
-                if (this.selectedMetric === 'floor' && this.multiplyFloor) {
-                  return value * 2;
-                }
-                return value;
               }
             }
           }
