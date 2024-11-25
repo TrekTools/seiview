@@ -436,6 +436,34 @@ export default {
           chart.update('none');
         });
       }
+
+      // Update chart options with dynamic y-axis title
+      this.chartOptions = {
+        ...this.chartOptions,
+        scales: {
+          ...this.chartOptions.scales,
+          y: {
+            ...this.chartOptions.scales.y,
+            title: {
+              display: this.selectedMetric === 'floor',
+              text: this.selectedMetric === 'floor' ? (this.multiplyFloor ? '$USD' : '$SEI') : '',
+              color: 'white',
+              font: {
+                family: 'Antonio',
+                size: 18
+              }
+            },
+            ticks: {
+              color: 'white',
+              font: {
+                family: 'Antonio',
+                size: 18
+              }
+            },
+            grid: { color: 'rgba(255, 255, 255, 0.1)' }
+          }
+        }
+      }
     },
     getRandomColor() {
       const colors = [
