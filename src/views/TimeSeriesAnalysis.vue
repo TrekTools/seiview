@@ -1,7 +1,7 @@
 <template>
   <div class="time-series">
     <div class="lcars-header-bar">
-      <div class="title">TIME SERIES ANALYSIS (24 Hours)</div>
+      <div class="title">TIME SERIES ANALYSIS</div>
     </div>
     
     <!-- Controls container -->
@@ -26,14 +26,24 @@
         </select>
       </div>
 
+      <div class="time-range-selector">
+        <select v-model="selectedTimeRange" class="metric-select">
+          <option value="24">Last Day</option>
+          <option value="168">Last Week</option>
+        </select>
+      </div>
+
       <div class="multiplier-toggle" v-if="selectedMetric === 'floor'">
-        <label class="toggle-label">
-          <input 
-            type="checkbox" 
-            v-model="multiplyFloor"
-            class="toggle-input"
-          >
-          2x Floor Price
+        <label class="switch-label">
+          <span class="switch-text">Real Price ($USD)</span>
+          <div class="switch">
+            <input 
+              type="checkbox" 
+              v-model="multiplyFloor"
+              class="switch-input"
+            >
+            <span class="switch-slider"></span>
+          </div>
         </label>
       </div>
     </div>
@@ -145,6 +155,7 @@ export default {
         }
       },
       multiplyFloor: false,
+      selectedTimeRange: 24, // Default to last day
     }
   },
   watch: {
@@ -159,6 +170,9 @@ export default {
     },
     multiplyFloor() {
       this.updateChartData(this.filteredTimeSeriesData)
+    },
+    selectedTimeRange() {
+      this.fetchTimeSeriesData(this.maxRecord - this.selectedTimeRange)
     }
   },
   created() {
@@ -187,7 +201,7 @@ export default {
         )
         
         this.maxRecord = response.data.data.max_record[0].current_max
-        this.fetchTimeSeriesData(this.maxRecord - 24)
+        this.fetchTimeSeriesData(this.maxRecord - this.selectedTimeRange)
       } catch (err) {
         console.error('Error fetching max record:', err)
         this.error = err.message
@@ -433,18 +447,70 @@ export default {
   align-items: center;
 }
 
-.toggle-label {
+.switch-label {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   color: white;
   font-family: var(--lcars-font);
   cursor: pointer;
 }
 
-.toggle-input {
-  width: 18px;
+.switch-text {
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 24px;
+}
+
+.switch-input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.switch-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #2b2b2b;
+  transition: .4s;
+  border-radius: 24px;
+}
+
+.switch-slider:before {
+  position: absolute;
+  content: "";
   height: 18px;
-  accent-color: var(--lcars-orange);
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+.switch-input:checked + .switch-slider {
+  background-color: var(--lcars-orange);
+}
+
+.switch-input:checked + .switch-slider:before {
+  transform: translateX(26px);
+}
+
+.switch-input:focus + .switch-slider {
+  box-shadow: 0 0 1px var(--lcars-orange);
+}
+
+.time-range-selector {
+  width: 200px;
 }
 </style> 
