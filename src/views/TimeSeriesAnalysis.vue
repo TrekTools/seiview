@@ -25,6 +25,17 @@
           <option value="auction_count">Auctions</option>
         </select>
       </div>
+
+      <div class="multiplier-toggle" v-if="selectedMetric === 'floor'">
+        <label class="toggle-label">
+          <input 
+            type="checkbox" 
+            v-model="multiplyFloor"
+            class="toggle-input"
+          >
+          2x Floor Price
+        </label>
+      </div>
     </div>
 
     <!-- Chart -->
@@ -32,6 +43,7 @@
       <Line
         :data="chartData"
         :options="chartOptions"
+        :key="multiplyFloor"
       />
     </div>
   </div>
@@ -131,7 +143,8 @@ export default {
             }
           }
         }
-      }
+      },
+      multiplyFloor: false,
     }
   },
   watch: {
@@ -142,6 +155,9 @@ export default {
       deep: true
     },
     selectedMetric() {
+      this.updateChartData(this.filteredTimeSeriesData)
+    },
+    multiplyFloor() {
       this.updateChartData(this.filteredTimeSeriesData)
     }
   },
@@ -204,7 +220,7 @@ export default {
           },
           {
             headers: {
-              'Content-Type': 'application/json',
+              'content-type': 'application/json',
               'x-hasura-admin-secret': process.env.VUE_APP_HASURA_ADMIN_SECRET
             }
           }
@@ -262,6 +278,39 @@ export default {
           borderColor: this.getRandomColor(),
           tension: 0.1
         }))
+      }
+
+      // Update chart options
+      this.chartOptions = {
+        ...this.chartOptions,
+        scales: {
+          ...this.chartOptions.scales,
+          y: {
+            ...this.chartOptions.scales.y,
+            title: {
+              display: true,
+              text: this.selectedMetric === 'floor' ? (this.multiplyFloor ? '$USD' : '$SEI') : '',
+              color: 'white',
+              font: {
+                family: 'Antonio',
+                size: 18
+              }
+            },
+            ticks: {
+              color: 'white',
+              font: {
+                family: 'Antonio',
+                size: 18
+              },
+              callback: (value) => {
+                if (this.selectedMetric === 'floor' && this.multiplyFloor) {
+                  return value * 2;
+                }
+                return value;
+              }
+            }
+          }
+        }
       }
     },
     getRandomColor() {
@@ -361,5 +410,25 @@ export default {
   padding: 20px;
   background-color: rgba(255, 255, 255, 0.05);
   border-radius: 15px;
+}
+
+.multiplier-toggle {
+  display: flex;
+  align-items: center;
+}
+
+.toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: white;
+  font-family: var(--lcars-font);
+  cursor: pointer;
+}
+
+.toggle-input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--lcars-orange);
 }
 </style> 

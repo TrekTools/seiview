@@ -51,6 +51,8 @@ export default {
   },
   methods: {
     async fetchCollectionData() {
+      console.log('Hasura Secret Available:', !!process.env.VUE_APP_HASURA_ADMIN_SECRET)
+      
       const query = `
         query collection_stats($slug: String!) {
           pallet_time_comparison(where: {slug: {_eq: $slug}}) {
@@ -83,6 +85,13 @@ export default {
       `
 
       try {
+        this.loading = true
+        const hasuraSecret = process.env.VUE_APP_HASURA_ADMIN_SECRET
+        
+        if (!hasuraSecret) {
+          throw new Error('Hasura admin secret is not configured')
+        }
+
         const response = await axios.post(
           'https://select-oyster-59.hasura.app/v1/graphql',
           { 
@@ -93,7 +102,7 @@ export default {
           },
           {
             headers: {
-              'Content-Type': 'application/json',
+              'content-type': 'application/json',
               'x-hasura-admin-secret': process.env.VUE_APP_HASURA_ADMIN_SECRET
             }
           }
@@ -101,8 +110,12 @@ export default {
         
         this.collectionData = response.data.data.pallet_time_comparison[0]
       } catch (err) {
-        console.error('Error fetching collection data:', err)
-        this.error = err.message
+        console.error('Error details:', {
+          message: err.message,
+          response: err.response?.data,
+          status: err.response?.status
+        })
+        this.error = 'Failed to fetch collection data'
       } finally {
         this.loading = false
       }

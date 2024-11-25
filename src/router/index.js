@@ -5,6 +5,7 @@ import TimeSeriesAnalysis from '../views/TimeSeriesAnalysis.vue'
 import MarketAnalysis from '../views/MarketAnalysis.vue'
 import TrekStarmap from '@/views/TrekStarmap.vue'
 import AboutPage from '@/views/AboutPage.vue'
+import AIAnalysis from '@/views/AIAnalysis.vue'
 import { trackRouter } from 'vue-gtag-next'
 
 const routes = [
@@ -38,6 +39,11 @@ const routes = [
     path: '/about',
     name: 'About',
     component: AboutPage
+  },
+  {
+    path: '/ai-analysis',
+    name: 'AIAnalysis',
+    component: AIAnalysis
   }
 ]
 

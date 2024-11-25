@@ -19,6 +19,7 @@
         <router-link to="/market-analysis" class="nav-link market-analysis">Market Analysis</router-link>
         <router-link to="/starmap" class="nav-link starmap">Starmap</router-link>
         <router-link to="/about" class="nav-link about">About</router-link>
+        <router-link to="/ai-analysis" class="nav-link ai-analysis">AI Analysis</router-link>
         <div class="social-links">
           <a href="https://discord.gg/K9vUgVxm3W" target="_blank" class="social-link discord">
             <svg class="social-icon" viewBox="0 0 24 24">
