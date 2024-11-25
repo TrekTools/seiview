@@ -46,14 +46,28 @@
           </div>
         </label>
       </div>
+
+      <div class="trendline-toggle">
+        <label class="switch-label">
+          <span class="switch-text">Show Trendline</span>
+          <div class="switch">
+            <input 
+              type="checkbox" 
+              v-model="showTrendline"
+              class="switch-input"
+            >
+            <span class="switch-slider"></span>
+          </div>
+        </label>
+      </div>
     </div>
 
     <!-- Chart -->
     <div class="chart-container" v-if="chartData">
       <Line
+        ref="chart"
         :data="chartData"
         :options="chartOptions"
-        :key="multiplyFloor"
       />
     </div>
   </div>
@@ -72,6 +86,7 @@ import {
   Tooltip,
   Legend
 } from 'chart.js'
+import 'chartjs-plugin-zoom';
 
 ChartJS.register(
   CategoryScale,
@@ -80,7 +95,8 @@ ChartJS.register(
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  require('chartjs-plugin-zoom')
 )
 
 export default {
@@ -151,11 +167,31 @@ export default {
                 family: 'Antonio'
               }
             }
+          },
+          zoom: {
+            pan: {
+              enabled: true,
+              mode: 'xy',
+            },
+            zoom: {
+              wheel: {
+                enabled: true,
+              },
+              pinch: {
+                enabled: true
+              },
+              mode: 'xy',
+            },
+            limits: {
+              x: {min: 'original', max: 'original'},
+              y: {min: 'original', max: 'original'}
+            }
           }
         }
       },
       multiplyFloor: false,
       selectedTimeRange: 24, // Default to last day
+      showTrendline: false,
     }
   },
   watch: {
@@ -173,6 +209,9 @@ export default {
     },
     selectedTimeRange() {
       this.fetchTimeSeriesData(this.maxRecord - this.selectedTimeRange)
+    },
+    showTrendline() {
+      this.updateChartData(this.filteredTimeSeriesData)
     }
   },
   created() {
@@ -287,7 +326,49 @@ export default {
         });
       }
     },
+    calculateTrendline(times, values) {
+      const n = times.length;
+      if (n < 2) return null;
+
+      // Convert times to numerical indices (0, 1, 2, ...)
+      const x = Array.from({length: n}, (_, i) => i);
+      
+      // Calculate means
+      const meanX = x.reduce((a, b) => a + b, 0) / n;
+      const meanY = values.reduce((a, b) => a + b, 0) / n;
+      
+      // Calculate slope and intercept
+      let numerator = 0;
+      let denominator = 0;
+      
+      for (let i = 0; i < n; i++) {
+        numerator += (x[i] - meanX) * (values[i] - meanY);
+        denominator += Math.pow(x[i] - meanX, 2);
+      }
+      
+      const slope = numerator / denominator;
+      const intercept = meanY - slope * meanX;
+      
+      // Generate trendline points
+      return x.map(xi => slope * xi + intercept);
+    },
     updateChartData(data) {
+      // Store current zoom/pan state if chart exists
+      let currentState = null;
+      if (this.$refs.chart && this.$refs.chart.chart) {
+        const chart = this.$refs.chart.chart;
+        currentState = {
+          zoom: {
+            x: chart.scales.x.options.min,
+            y: chart.scales.y.options.min
+          },
+          pan: {
+            x: chart.scales.x.min,
+            y: chart.scales.y.min
+          }
+        };
+      }
+
       // Group data by collection name
       const collections = {}
       data.forEach(item => {
@@ -300,47 +381,60 @@ export default {
         collections[item.name].times.push(item.rounded_time)
         let value = item[this.selectedMetric]
         if (this.selectedMetric === 'floor' && this.multiplyFloor) {
-          value *= (item.usd_price || 0)  // Multiply by actual USD price
+          value *= (item.usd_price || 0)
         }
         collections[item.name].values.push(value)
       })
 
-      // Create chart data
-      this.chartData = {
-        labels: [...new Set(data.map(item => item.rounded_time))].sort(),
-        datasets: Object.entries(collections).map(([name, data]) => ({
+      // Create chart data with trendlines
+      const labels = [...new Set(data.map(item => item.rounded_time))].sort();
+      const datasets = [];
+
+      // Add main datasets and trendlines
+      Object.entries(collections).forEach(([name, data]) => {
+        const color = this.getRandomColor();
+        datasets.push({
           label: name,
           data: data.values,
-          borderColor: this.getRandomColor(),
+          borderColor: color,
           tension: 0.1
-        }))
-      }
+        });
 
-      // Update chart options
-      this.chartOptions = {
-        ...this.chartOptions,
-        scales: {
-          ...this.chartOptions.scales,
-          y: {
-            ...this.chartOptions.scales.y,
-            title: {
-              display: true,
-              text: this.selectedMetric === 'floor' ? (this.multiplyFloor ? '$USD' : '$SEI') : '',
-              color: 'white',
-              font: {
-                family: 'Antonio',
-                size: 18
-              }
-            },
-            ticks: {
-              color: 'white',
-              font: {
-                family: 'Antonio',
-                size: 18
-              }
-            }
+        if (this.showTrendline) {
+          const trendlineData = this.calculateTrendline(data.times, data.values);
+          if (trendlineData) {
+            datasets.push({
+              label: `${name} Trend`,
+              data: trendlineData,
+              borderColor: color,
+              borderDash: [5, 5],
+              borderWidth: 1,
+              pointRadius: 0,
+              fill: false
+            });
           }
         }
+      });
+
+      this.chartData = {
+        labels,
+        datasets
+      }
+
+      // Restore zoom/pan state if it existed
+      if (currentState) {
+        this.$nextTick(() => {
+          const chart = this.$refs.chart.chart;
+          if (currentState.zoom.x !== undefined) {
+            chart.scales.x.options.min = currentState.zoom.x;
+            chart.scales.x.options.max = currentState.zoom.x;
+          }
+          if (currentState.zoom.y !== undefined) {
+            chart.scales.y.options.min = currentState.zoom.y;
+            chart.scales.y.options.max = currentState.zoom.y;
+          }
+          chart.update('none');
+        });
       }
     },
     getRandomColor() {
@@ -512,5 +606,10 @@ export default {
 
 .time-range-selector {
   width: 200px;
+}
+
+.trendline-toggle {
+  display: flex;
+  align-items: center;
 }
 </style> 
