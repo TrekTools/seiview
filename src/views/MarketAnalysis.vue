@@ -146,16 +146,38 @@ export default {
       const data = [{
         type: 'treemap',
         labels: dataToShow.map(item => {
-          const floorText = `Floor: ${this.formatNumber(item.current_floor_1h)}`;
+          const floorText = `Floor: ${this.formatNumber(item.previous_floor_1d)}`;
           const floorDiff = `(${this.formatPercent(item.floor_percent_diff_1d)})`;
-          const volumeText = `Volume: ${this.formatNumber(item.current_volume_1h)}`;
+          const volumeText = `Volume: ${this.formatNumber(item.previous_volume_1d)}`;
           const volumeDiff = `(${this.formatPercent(item.volume_percent_diff_1d)})`;
           return `${item.name}<br>${floorText} ${floorDiff}<br>${volumeText} ${volumeDiff}`;
         }),
+        hovertext: dataToShow.map(item => {
+          const floorText = `Floor: ${this.formatNumber(item.previous_floor_1d)}`;
+          const floorDiff = `(${this.formatPercent(item.floor_percent_diff_1d)})`;
+          const volumeText = `Volume: ${this.formatNumber(item.previous_volume_1d)}`;
+          const volumeDiff = `(${this.formatPercent(item.volume_percent_diff_1d)})`;
+          return `<b>${item.name}</b><br><br>${floorText} ${floorDiff}<br>${volumeText} ${volumeDiff}`;
+        }),
         parents: dataToShow.map(() => ''),
-        values: dataToShow.map(item => item.current_volume_1h),
+        values: dataToShow.map(item => item.previous_volume_1d),
         textposition: 'middle center',
-        hoverinfo: 'none',
+        hoverinfo: 'text',
+        hoverlabel: {
+          bgcolor: 'rgba(0, 0, 0, 0.8)',
+          bordercolor: 'var(--lcars-orange)',
+          font: {
+            family: 'Antonio',
+            size: 24,
+            color: 'white'
+          },
+          align: 'left'
+        },
+        textfont: {
+          family: 'Antonio',
+          color: 'white'
+        },
+        textinfo: 'label',
         marker: {
           colors: dataToShow.map(item => {
             const percentChange = item.floor_percent_diff_1d;
@@ -167,11 +189,6 @@ export default {
             width: 2,
             color: 'var(--lcars-orange)'
           }
-        },
-        textfont: {
-          family: 'Antonio',
-          size: 14,
-          color: 'white'
         }
       }]
 
@@ -179,9 +196,8 @@ export default {
         paper_bgcolor: 'black',
         plot_bgcolor: 'black',
         margin: { t: 0, l: 0, r: 0, b: 0 },
-        font: {
-          family: 'Antonio',
-          color: 'white'
+        hoverlabel: {
+          namelength: -1  // Show full text in hover label
         }
       }
 
@@ -191,6 +207,42 @@ export default {
       }
 
       Plotly.newPlot('treemap', data, layout, config)
+
+      // Add event listener for the plot render
+      const treemapDiv = document.getElementById('treemap');
+      treemapDiv.on('plotly_afterplot', () => {
+        const textElements = treemapDiv.getElementsByClassName('textspan');
+        
+        Array.from(textElements).forEach(text => {
+          const parentTile = text.closest('g.trace');
+          if (parentTile) {
+            const rect = parentTile.getElementsByTagName('rect')[0];
+            if (rect) {
+              const width = parseFloat(rect.getAttribute('width'));
+              const height = parseFloat(rect.getAttribute('height'));
+              const area = width * height;
+              
+              // Scale font size based on tile area
+              const minSize = 20;  // Minimum font size
+              const maxSize = 400; // Maximum font size
+              const scaleFactor = 0.00015; // Adjust this to change scaling sensitivity
+              
+              const fontSize = Math.min(
+                maxSize,
+                Math.max(minSize, Math.sqrt(area) * scaleFactor)
+              );
+              
+              // Hide text if tile is too small
+              if (fontSize <= minSize) {
+                text.style.display = 'none';
+              } else {
+                text.style.display = '';
+                text.style.fontSize = `${fontSize}px`;
+              }
+            }
+          }
+        });
+      });
     },
 
     formatNumber(value) {
