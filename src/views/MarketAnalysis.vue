@@ -79,6 +79,18 @@ export default {
             current_auction_count_1h
             auction_count_percent_diff_1h
             auction_count_diff_1h
+            volume_diff_1d
+            volume_percent_diff_1d
+            previous_volume_1d
+            previous_owners_1d
+            previous_floor_1d
+            previous_auction_count_1d
+            owners_percent_diff_1d
+            owners_diff_1d
+            floor_percent_diff_1d
+            floor_diff_1d
+            auction_count_percent_diff_1d
+            auction_count_diff_1d
             key_data_mapping {
               pfp
               discord
@@ -96,16 +108,35 @@ export default {
           {
             headers: {
               'content-type': 'application/json',
-              'x-hasura-admin-secret': import.meta.env.VUE_APP_HASURA_ADMIN_SECRET
+              'x-hasura-admin-secret': process.env.VUE_APP_HASURA_ADMIN_SECRET
             }
           }
         )
         
-        this.marketData = response.data.data.pallet_time_comparison
-        this.filteredData = this.marketData
-        this.createTreemap()
+        if (response.data.errors) {
+          console.error('GraphQL Errors:', response.data.errors);
+          return;
+        }
+
+        if (!response.data || !response.data.data) {
+          console.error('Invalid response structure:', JSON.stringify(response.data, null, 2));
+          return;
+        }
+
+        const { data } = response.data;
+        if (!data.pallet_time_comparison) {
+          console.error('Missing pallet_time_comparison in response:', JSON.stringify(data, null, 2));
+          return;
+        }
+        
+        this.marketData = data.pallet_time_comparison;
+        this.filteredData = this.marketData;
+        this.createTreemap();
       } catch (err) {
-        console.error('Fetch error:', err)
+        console.error('Fetch error:', err);
+        if (err.response) {
+          console.error('Error response data:', err.response.data);
+        }
       }
     },
 
@@ -116,9 +147,9 @@ export default {
         type: 'treemap',
         labels: dataToShow.map(item => {
           const floorText = `Floor: ${this.formatNumber(item.current_floor_1h)}`;
-          const floorDiff = `(${this.formatPercent(item.floor_percent_diff_1h)})`;
+          const floorDiff = `(${this.formatPercent(item.floor_percent_diff_1d)})`;
           const volumeText = `Volume: ${this.formatNumber(item.current_volume_1h)}`;
-          const volumeDiff = `(${this.formatPercent(item.volume_percent_diff_1h)})`;
+          const volumeDiff = `(${this.formatPercent(item.volume_percent_diff_1d)})`;
           return `${item.name}<br>${floorText} ${floorDiff}<br>${volumeText} ${volumeDiff}`;
         }),
         parents: dataToShow.map(() => ''),
@@ -127,7 +158,7 @@ export default {
         hoverinfo: 'none',
         marker: {
           colors: dataToShow.map(item => {
-            const percentChange = item.floor_percent_diff_1h;
+            const percentChange = item.floor_percent_diff_1d;
             if (percentChange >= 1) return 'rgba(46, 196, 182, 0.4)';
             if (percentChange <= -1) return 'rgba(231, 29, 54, 0.4)';
             return 'rgba(212, 180, 131, 0.4)';
@@ -188,10 +219,10 @@ export default {
 
       switch (this.currentFilter) {
         case 'winners':
-          filtered = filtered.filter(item => (item.floor_percent_diff_1h) >= 1);
+          filtered = filtered.filter(item => (item.floor_percent_diff_1d) >= 1);
           break;
         case 'losers':
-          filtered = filtered.filter(item => (item.floor_percent_diff_1h) <= -1);
+          filtered = filtered.filter(item => (item.floor_percent_diff_1d) <= -1);
           break;
         // 'all' case doesn't need additional filtering
       }
